@@ -6,12 +6,69 @@ import java.util.ArrayList;
 import util.*;
 
 public class FeedDAO {
-	public boolean insert(String uid, String ucon, String uimages) throws NamingException, SQLException {
+    public boolean insert(String uid, String ucon, String uimages) throws NamingException, SQLException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = ConnectionPool.get();
+            String sql = "INSERT INTO feed (id, content, images) VALUES (?, ?, ?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, uid);
+            stmt.setString(2, ucon);
+            stmt.setString(3, uimages);
+            
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, uid);
+            stmt.setString(2, ucon);
+            stmt.setString(3, uimages);
+
+            // 입력 데이터 확인
+            System.out.println("uid: " + uid);
+            System.out.println("ucon: " + ucon);
+            System.out.println("uimages: " + uimages);
+
+            // SQL 쿼리 실행 전
+            System.out.println("Executing query: " + stmt.toString());
+            int count = stmt.executeUpdate();
+
+            // SQL 쿼리 실행 후 (1 or false)
+            System.out.println("Rows affected: " + count);
+            return count == 1;
+        } catch (SQLException e) {
+            // SQL 예외 로그 출력
+            System.err.println("SQLException: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } catch (NamingException e) {
+            // Naming 예외 로그 출력
+            System.err.println("NamingException: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing PreparedStatement: " + e.getMessage());
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing Connection: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+	/*public boolean insert(String uid, String ucon, String uimages) throws NamingException, SQLException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
 			conn = ConnectionPool.get();
-			String sql = "INSERT INTO feed(id, content) VALUES(?, ?)";
+			String sql = "INSERT INTO feed(id, content, imgaes) VALUES(?, ?, ?)";
 			stmt = conn.prepareStatement(sql);
 			stmt.setString(1, uid);
 			stmt.setString(2, ucon);
@@ -29,7 +86,8 @@ public class FeedDAO {
 			if (conn != null) conn.close();
 		}
 	}
-
+  }
+*/
 	public ArrayList<FeedObj> getList() throws NamingException, SQLException {
 		Connection conn = ConnectionPool.get();;
 		PreparedStatement stmt = null;

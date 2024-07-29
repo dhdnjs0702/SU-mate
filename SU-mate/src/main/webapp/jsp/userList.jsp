@@ -2,6 +2,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="dao.*" %>
 <%
+//테스트용 파일
   ArrayList<UserObj> list = (new UserDAO()).getList();
 
   String str = "<table align=center>";

@@ -28,7 +28,7 @@
     <script>
         // JavaScript 코드: 'SU-mate' 제목 클릭 시 index.jsp로 이동
         document.getElementById('title').addEventListener('click', () => {
-            window.location.href = 'index.jsp';
+            window.location.href = 'mainPage.jsp';
         });
     </script>
 </body>

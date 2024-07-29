@@ -16,6 +16,7 @@
 	}
 	else {
 		session.setAttribute("id", uid);
-		out.print("OK"); // response.sendRedirect("main.jsp");
+		//out.print("OK"); 
+		response.sendRedirect("mainPage.jsp");
 	}
 %>
