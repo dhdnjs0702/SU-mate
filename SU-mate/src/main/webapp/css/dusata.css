@@ -526,7 +526,7 @@ body {
     transition: background-color 0.3s; /* 색상 전환 애니메이션 */
 }
 
-.gender-btn.selected, .gender-btn:hover {
+.gender-btn.selected[data-gender="male"], .gender-btn[data-gender="male"]:hover {
     background-color: #007bff; /* 기본: 남성 선택 시 파란색 */
     color: white;
 }
@@ -544,16 +544,27 @@ body {
     align-items: flex-start; /* 상단 정렬 */
 }
 
+/* 추가된 스타일 */
+.postit-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center; /* 중앙 정렬 */
+    align-items: flex-start;
+    padding: 20px;
+}
+
 
 .postit {
     background-color: #fff2ac; /* 포스트잇 느낌의 색상 */
     border: 1px solid #e6d45b;
     border-radius: 4px;
-    width: 300px; /* 포스트잇 너비 210px로 설정 */
-    height: 300px; /* 포스트잇 높이 210px로 설정 */
+    width: 400px; /* 포스트잇 너비 210px로 설정 */
+    height: 400px; /* 포스트잇 높이 210px로 설정 */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     position: relative; /* 포스트잇의 자식 요소 위치 조정 */
     display: flex; /* 텍스트 가운데 정렬을 위해 flex 사용 */
+    flex-direction: column;
     align-items: center; /* 세로 가운데 정렬 */
     justify-content: center; /* 가로 가운데 정렬 */
     text-align: center;

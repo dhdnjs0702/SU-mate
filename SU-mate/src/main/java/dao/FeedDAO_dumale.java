@@ -1,18 +1,23 @@
 package dao;
 
-import java.sql.*;
-import javax.naming.NamingException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import util.*;
 
-public class FeedDAO {/*레퍼런스해야할 객체입니다.*/
-    public boolean insert(String uid, String ucon, String uimages) throws NamingException, SQLException {
+import javax.naming.NamingException;
+
+import util.ConnectionPool;
+
+public class FeedDAO_dumale {
+	public boolean insert(String uid, String ucon, String uimages) throws NamingException, SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
 
         try {
             conn = ConnectionPool.get();
-            String sql = "INSERT INTO feed (id, content, images) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO mfeed (id, content, images) VALUES (?, ?, ?)";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, uid);
             stmt.setString(2, ucon);
@@ -93,7 +98,7 @@ public class FeedDAO {/*레퍼런스해야할 객체입니다.*/
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT * FROM feed ORDER BY ts DESC";
+			String sql = "SELECT * FROM mfeed ORDER BY ts DESC";
 			stmt = conn.prepareStatement(sql);
 			rs = stmt.executeQuery();
 		 

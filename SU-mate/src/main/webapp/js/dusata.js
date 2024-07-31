@@ -1,23 +1,30 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const maleBtn = document.getElementById('maleBtn');
-    const femaleBtn = document.getElementById('femaleBtn');
-    const postitBoard = document.querySelector('.postit-board');
-
-	
-    maleBtn.addEventListener('click', () => {
-        selectGender('male');
-    });
-
-    femaleBtn.addEventListener('click', () => {
-        selectGender('female');
-    });
-
-    // 초기 로드시 남성 게시판을 보여줌
-    selectGender('male');
-
-    function selectGender(gender) {
-        maleBtn.classList.toggle('selected', gender === 'male');
-        femaleBtn.classList.toggle('selected', gender === 'female');
-        loadPostits(gender);
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    selectGender('male'); // 페이지 로드 시 기본 남자 버튼 선택
 });
+
+function selectGender(selectedGender) {
+    var maleBtn = document.getElementById('maleBtn');
+    var femaleBtn = document.getElementById('femaleBtn');
+
+    // Get the data-gender attribute values
+    var maleGender = maleBtn.getAttribute('data-gender');
+    var femaleGender = femaleBtn.getAttribute('data-gender');
+
+    // Set the selectedGender based on the gender parameter
+    var selectedGender;
+    if (gender === maleGender) {
+        selectedGender = maleGender;
+        maleBtn.classList.add('selected');
+        femaleBtn.classList.remove('selected');
+    } else if (gender === femaleGender) {
+        selectedGender = femaleGender;
+        maleBtn.classList.remove('selected');
+        femaleBtn.classList.add('selected');
+	}	else {
+	        alert('잘못된 접근입니다.');
+	        window.location.href = 'main.jsp';
+	        return; // 이후 코드를 실행하지 않도록 함수 종료
+    }
+
+    console.log("Selected Gender: " + selectedGender); // For debugging
+}

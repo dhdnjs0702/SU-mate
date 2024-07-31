@@ -24,23 +24,9 @@
 <link rel="stylesheet" href="../css/main_styles.css">
 </head>
 <body>
- <div class="main-container">
-        <div class="header">
-            <div class="logo"></div>
-            <div class="title" id="title">SU-mate</div>
-       		
-            <div class="menu">
-                <a href="roomMate.jsp" class="menu-item">기숙사 룸메이트</a>
-                <a href="dusata_m.jsp" class="menu-item">두유는 사랑을 타고</a>
-                <a href="mealCompanion.jsp" class="menu-item">밥친구</a>
-                <a href="carPool.jsp" class="menu-item">카풀</a>
-                <div class="search-bar">
-                    <form action="../index.html" class="search-form">
-                        <button type="submit" class="search-button">로그아웃</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+ <%@ include file="header_login.jsp" %> 
+ <!-- 헤더 부분 -->
+ 
 <!-- 여기 도연님 숙제입니다. 인트로 섹션에 들어갈 문구 바꾸시고, 위의 큰 글에 어서오세요!ㅇㅇ님 이런식으로 나오게 해주세요 -->        
 <div class="intro-section">
             <div class="divider"></div>

@@ -1,6 +1,6 @@
 package dao;
 
-public class FeedObj {
+public class FeedObj { /*레퍼런스해야할 객체입니다.*/
 	private String id, content, ts, images;;
 	
 	public FeedObj(String id, String content, String ts, String images) {

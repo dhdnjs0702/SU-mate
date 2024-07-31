@@ -1,6 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="utf-8" %>
 <%@ page import="dao.FeedDAO" %>
 <%
+//공부
 	request.setCharacterEncoding("utf-8");
 
 	String uid = request.getParameter("id");
