@@ -2,59 +2,109 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert titlle</title>
+<title>Insert title here</title>
 </head>
 <body>
-	<form action="jsp/feedAdd_dufemale.jsp" method="post" enctype="multipart/form-data">
-	<table align=center>
-		<tr><td colspan=2 align=center height=40><b>글작성</b><td></tr>
-		<tr>
-			<td align=right>아이디&nbsp;</td>
-			<td><input type="text" name="id" placeholder="Email address" required></td>
-		</tr>
-		<tr>
-			<td align=right>작성글&nbsp;</td>
-			<td><textarea name="content" rows=5 cols=20></textarea></td>
-		</tr>
-		<tr>
-			<td align=right>이미지&nbsp;</td>
-			<td><input type="file" name="images"></td>
-		</tr>
-		<tr>
-			<td colspan=2 align=center height=50>
-			<input type="submit" value="업로드하기">
-			</td>
-		</tr>
-	</table>
-	</form>
+	<form id="feedForm" action="jsp/feedAdd_dufemale.jsp" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="jsonstr" id="jsonstr">   
+    <label for="nickname">닉네임:</label>
+            <span id="userNickname"></span>
+            <br>
+    <label for="content">작성글:</label>
+    <textarea id="content" name="content" required></textarea><br>
+    <label for="image">이미지:</label>
+    <input type="file" id="image" name="image"><br>
+    <button type="submit">글 작성</button>
+    </form>
 </body>
-<script src="js/jquery-3.6.0.min.js"></script>
+<script src="js/jquery-3.7.1.min.js"></script>
 <script src="js/core.js"></script>
 <script>
-	function upload() {
-	  var id = $("#id").val().trim();
-	  if (id == "") {
-	  alert("아이디를 입력해 주세요.");
-	  $("#id").focus();
-	  return;
+$(document).ready(function() {
+    // 사용자 닉네임 가져오기
+    $.ajax({
+        url: 'jsp/getUserNickname.jsp',  // 서버에서 닉네임을 가져오는 JSP 파일
+        method: 'GET',
+        success: function(response) {
+            $('#userNickname').text(response);
+        },
+        error: function() {
+            $('#userNickname').text('Unknown');
+        }
+    });
+
+    $('#feedForm').submit(function(e) {
+        e.preventDefault();
+        
+        var formData = new FormData(this);
+        var content = $('#content').val();
+        
+        var jsonData = {
+            content: content,
+            ts: new Date().getTime()
+        };
+       	
+        formData.append("jsonstr", JSON.stringify(jsonData));
+        
+        $.ajax({
+            url: 'jsp/feedAdd_dufemale.jsp',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if(response.trim() === "OK") {
+                    alert("글이 성공적으로 작성되었습니다.");
+                    window.location.href = 'jsp/dusata_m.jsp';  // 글 목록 페이지로 리다이렉트
+                } else {
+                    alert("글 작성에 실패했습니다. 다시 시도해주세요.");
+                }
+            },
+            error: function() {
+                alert("서버 오류가 발생했습니다. 나중에 다시 시도해주세요.");
+            }
+        });
+    });
+});
+	function getTime() {
+		var date = new Date();
+		var year = date.getFullYear();
+		var month = ("0" + (1 + date.getMonth())).slice(-2);
+		var day = ("0" + date.getDate()).slice(-2);
+		
+		var hour = ("0" + date.getHours()).slice(-2);
+		var min = ("0" + date.getMinutes()).slice(-2);
+		var sec = ("0" + date.getSeconds()).slice(-2);
+		return year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
+		}
+	
+	function submitForm() {
+	    var formData = new FormData(document.getElementById('feedForm'));
+	    var jsonData = {
+	        content: document.getElementById('content').value,
+	        ts: getTime().toString() //명시적으로 처리해야 원하는 포멧으로 들어감
+	    };
+	    formData.append('jsonstr', JSON.stringify(jsonData));
+
+	    // AJAX를 사용하여 서버로 데이터 전송
+	    $.ajax({
+	        url: 'jsp/feedAdd_dufemale.jsp',
+	        type: 'POST',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        success: function(response) {
+	            if (response.trim() === "OK") {
+	                alert("글이 성공적으로 등록되었습니다.");
+	                window.location.href = "dusata_m.jsp"; // 글 목록 페이지로 이동
+	            } else {
+	                alert("글 등록에 실패했습니다: " + response);
+	            }
+	        },
+	        error: function(xhr, status, error) {
+	            alert("오류가 발생했습니다: " + error);
+	        }
+	    });
 	}
-	var content = $("#content").val().trim();
- 	if (content == "") {
-	  alert("작성글을 입력해 주세요.");
-	  $("#content").focus();
-	  return;
-}
- 	var url ="jsp/feedAdd.jsp";
- 	AJAX.call(url, params, function(data) {
- 	  var code = data.trim();
- 	  if (code == "ER") {
- 		alert("작성 글의 업로드 중 오류가 발생하였습니다.");
- 	  }
- 	  else {
- 		alert("작성 글의 업로드가 완료되었습니다.");
- 		window.location.href = "jsp/dusata_f.jsp";
- 		}
- 	  }, true);
- 	}
 </script>
 </html>

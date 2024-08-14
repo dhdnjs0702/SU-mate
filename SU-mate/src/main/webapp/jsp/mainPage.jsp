@@ -26,16 +26,22 @@
 <body>
  <%@ include file="header_login.jsp" %> 
  <!-- 헤더 부분 -->
- 
-<!-- 여기 도연님 숙제입니다. 인트로 섹션에 들어갈 문구 바꾸시고, 위의 큰 글에 어서오세요!ㅇㅇ님 이런식으로 나오게 해주세요 -->        
+ <%
+    String nickname = (String) session.getAttribute("nickname");
+%>       
 <div class="intro-section">
             <div class="divider"></div>
             <div class="intro-text">
-                <div class="welcome">안녕하세요! 여러분들의 영원한 친구 SU-mate입니다!</div>
+                <div class="welcome">
+                <% if (nickname != null) { %>
+                어서오세요! <%= nickname %>님!
+                <%= nickname %>님의 영원한 친구 SU-mate입니다!
+            	<% } else { %>
+                안녕하세요! 여러분들의 영원한 친구 SU-mate입니다!
+           		 <% } %>
+                </div>
                 <div class="description">지금 바로 SU-mate와 함께 나에게 맞는 친구를 찾아보세요</div>
-                <form class="get-started" action="login.jsp">
-                     <input type="submit" value="시작하기" class="get-started-button">
-                </form>
+                
             </div>
   </div>
 
@@ -127,7 +133,7 @@
 <%@ include file="footer.jsp" %> <!-- 풋터 부분 -->
 
     <script>
-        // JavaScript 코드: 'SU-mate' 제목 클릭 시 index.jsp로 이동
+        // JavaScript 코드: 'SU-mate' 제목 클릭 시 mainPage.jsp로 이동
         document.getElementById('title').addEventListener('click', () => {
             window.location.href = 'mainPage.jsp';
         });

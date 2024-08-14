@@ -10,36 +10,81 @@ import javax.naming.NamingException;
 
 import util.ConnectionPool;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.naming.NamingException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 public class FeedDAO_dufemale {
-	public boolean insert(String uid, String ucon, String uimages) throws NamingException, SQLException {
+    public boolean insert(String jsonstr) throws NamingException, SQLException, ParseException {
         Connection conn = null;
         PreparedStatement stmt = null;
-
-        try {
+        ResultSet rs = null;
+        
+        try { 
             conn = ConnectionPool.get();
-            String sql = "INSERT INTO fmfeed (id, content, images) VALUES (?, ?, ?)";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, uid);
-            stmt.setString(2, ucon);
-            stmt.setString(3, uimages);
-            
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, uid);
-            stmt.setString(2, ucon);
-            stmt.setString(3, uimages);
+            synchronized(this) {
+            	// JSON 문자열 유효성 검사
+                if (jsonstr == null || jsonstr.trim().isEmpty()) {
+                    System.err.println("Error: jsonstr is null or empty");
+                    return false; // 오류 발생 시 false 반환
+                }
+            	
+                // Phase 1: Add "no" property
+                String sql = "SELECT no FROM fmfeed ORDER BY no DESC LIMIT 1";
+                stmt = conn.prepareStatement(sql);
+                rs = stmt.executeQuery();
 
-            // 입력 데이터 확인
-            System.out.println("uid: " + uid);
-            System.out.println("ucon: " + ucon);
-            System.out.println("uimages: " + uimages);
+                int max = (!rs.next()) ? 0 : rs.getInt("no");
 
-            // SQL 쿼리 실행 전
-            System.out.println("Executing query: " + stmt.toString());
-            int count = stmt.executeUpdate();
+                JSONParser parser = new JSONParser();
+                JSONObject jsonobj = (JSONObject) parser.parse(jsonstr);
+                jsonobj.put("no", max + 1);
 
-            // SQL 쿼리 실행 후 (1 or false)
-            System.out.println("Rows affected: " + count);
-            return count == 1;
+                stmt.close(); rs.close();
+
+                // Phase 2: Add "user" property
+                String uid = jsonobj.get("id").toString();
+                
+                sql = "SELECT jsonstr FROM user WHERE id = ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setString(1, uid);
+                rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    String usrstr = rs.getString("jsonstr");
+                    JSONObject usrobj = (JSONObject) parser.parse(usrstr);
+                    usrobj.remove("password");
+                    usrobj.remove("ts");
+                    jsonobj.put("user", usrobj);
+                }
+
+                stmt.close(); rs.close();
+                
+                // Log the JSON object
+                System.out.println("Final JSON Object: " + jsonobj.toJSONString());
+
+                // Phase 3: Insert jsonobj to the table
+                sql = "INSERT INTO fmfeed(no, id, jsonstr) VALUES(?, ?, ?)";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, max + 1);
+                stmt.setString(2, uid);
+                stmt.setString(3, jsonobj.toJSONString());
+
+                // Log the query and parameters
+                System.out.println("Executing query: " + stmt.toString());
+
+                int count = stmt.executeUpdate();
+
+                // Log the result
+                System.out.println("Rows affected: " + count);
+
+                return count == 1;
+            }
         } catch (SQLException e) {
             // SQL 예외 로그 출력
             System.err.println("SQLException: " + e.getMessage());
@@ -50,67 +95,68 @@ public class FeedDAO_dufemale {
             System.err.println("NamingException: " + e.getMessage());
             e.printStackTrace();
             return false;
+        } catch (ParseException e) {
+            // JSON 파싱 예외 로그 출력
+            System.err.println("ParseException: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    System.err.println("Error closing PreparedStatement: " + e.getMessage());
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    System.err.println("Error closing Connection: " + e.getMessage());
-                }
-            }
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
         }
     }
 
-	/*public boolean insert(String uid, String ucon, String uimages) throws NamingException, SQLException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		try {
-			conn = ConnectionPool.get();
-			String sql = "INSERT INTO feed(id, content, imgaes) VALUES(?, ?, ?)";
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, uid);
-			stmt.setString(2, ucon);
-			stmt.setString(3, uimages);
+public String getList() throws NamingException, SQLException {
+	Connection conn = ConnectionPool.get();
+	PreparedStatement stmt = null;
+	ResultSet rs = null;
+	try {
+		String sql = "SELECT jsonstr FROM fmfeed ORDER BY no DESC";
+		stmt = conn.prepareStatement(sql);
+		rs = stmt.executeQuery();
+	 
+		String str = "[";
+		int cnt = 0;
+		while(rs.next()) {
+		if (cnt++ > 0) str += ", ";
+		str += rs.getString("jsonstr");
+		}
+		return str + "]";
+		
+	} finally {
+		if (rs != null) rs.close();
+		if (stmt != null) stmt.close();
+		if (conn != null) conn.close();
+	}
+}
 
-			int count = stmt.executeUpdate();
-			return (count == 1);
-			
-		} catch (SQLException | NamingException e) {
-			// 예외 발생 시 상세 메시지 출력
-			e.printStackTrace();
-			return false;
-		} finally {
-			if (stmt != null) stmt.close();
-			if (conn != null) conn.close();
+public String getGroup(int maxNo) throws NamingException, SQLException {
+	Connection conn = ConnectionPool.get();
+	PreparedStatement stmt = null;
+	ResultSet rs = null;
+	try {
+		String sql = "SELECT jsonstr FROM fmfeed";
+		if (maxNo > 0) {
+			sql += " WHERE no < " + maxNo;
 		}
-	}
+		sql += " ORDER BY no DESC LIMIT 6";
+		
+		stmt = conn.prepareStatement(sql);
+		rs = stmt.executeQuery();
+
+        String str = "[";
+        int cnt = 0;
+        while (rs.next()) {
+            if (cnt++ > 0) str += ", ";
+            str += rs.getString("jsonstr");
+        }
+        return str + "]";
+
+    } finally {
+        if (rs != null) rs.close();
+        if (stmt != null) stmt.close();
+        if (conn != null) conn.close();
+    }
   }
-*/
-	public ArrayList<FeedObj> getList() throws NamingException, SQLException {
-		Connection conn = ConnectionPool.get();;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			String sql = "SELECT * FROM fmfeed ORDER BY ts DESC";
-			stmt = conn.prepareStatement(sql);
-			rs = stmt.executeQuery();
-		 
-			ArrayList<FeedObj> feeds = new ArrayList<FeedObj>();
-			while(rs.next()) {
-				feeds.add(new FeedObj(rs.getString("id"), rs.getString("content"), rs.getString("ts"), rs.getString("images")));
-			}
-			return feeds;
-		} finally {
-			if (rs != null) rs.close();
-			if (stmt != null) stmt.close();
-			if (conn != null) conn.close();
-		}
-	}
 }

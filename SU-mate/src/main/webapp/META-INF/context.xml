@@ -3,7 +3,7 @@
     <Resource name="jdbc/sumate"
               auth="Container"
               type="javax.sql.DataSource"
-              driverClassName="com.mysql.cj.jdbc.Driver"
+              driverClassName="com.mysql.jdbc.Driver"
               url="jdbc:mysql://localhost:3306/sumate?serverTimezone=UTC"
               username="root"
               password="1111"

@@ -39,7 +39,7 @@
 <%@ include file="footer.jsp" %>
 </div>
 
-<script src="js/jquery-3.6.0.min.js"></script>
+<script src="../js/jquery-3.7.1.min.js"></script>
 <script src="../js/core.js"></script>
 <script>
 function login() {
@@ -57,7 +57,7 @@ function login() {
 		return;
 	}
 	
-	var url ="jsp/login_user.jsp?id=" + id + "&ps=" + ps;
+	var url ="login_user.jsp?id=" + id + "&ps=" + ps;
 	AJAX.call(url, null, function(data) {
 		var code = data.trim();
 		if(code == "NE") {

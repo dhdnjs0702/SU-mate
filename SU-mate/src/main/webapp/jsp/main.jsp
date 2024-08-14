@@ -2,31 +2,19 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>  <!-- 테스트용 파일입니다 -->
 <%@ page import="dao.*" %>
-<%
-    // 로그인 상태 확인
-    String uid = (String) session.getAttribute("id");
-    if (uid == null) {
-%>
-        <script type="text/javascript">
-            alert("로그인 후 이용가능한 컨텐츠입니다.");
-            window.location.href = "login.jsp"; // 로그인 페이지로 리다이렉트
-        </script>
-<%
-        return; // JSP 페이지 실행 종료
-    }
 
-    // 로그인 상태인 경우 세션에 사용자 ID를 다시 설정 (필요에 따라)
-    session.setAttribute("id", uid);
-%>
 <%
+	out.print((new FeedDAO_dumale()).getList());
+
 //테스트용 파일입니다.
-  /*String uid = (String) session.getAttribute("id");
+  
+	/*String uid = (String) session.getAttribute("id");
   if (uid == null) {
 	  response.sendRedirect("index.jsp");
 	return;
   }
   session.setAttribute("id", uid);
-*/
+
   ArrayList<FeedObj> feeds = (new FeedDAO()).getList();
   String str = "<table align=center>";
   str += "<tr height=40><td><b>작성글 리스트</b></td>";
@@ -49,4 +37,5 @@
   }
   str += "</table>";
   out.print(str);
+  */
 %>

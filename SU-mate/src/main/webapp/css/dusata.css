@@ -611,6 +611,26 @@ body {
     transition: background-color 0.3s ease;
 }
 
+#loadMoreContainer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#loadMoreButton {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#loadMoreButton:hover {
+    background-color: #444;
+}
+
 /* 반응형 웹 디자인을 위한 미디어 쿼리 */
 @media (max-width: 768px) {
     .postit {
